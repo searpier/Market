@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="carrot.market.test.repository.MarketDAO">
+<!-- 회원가입 -->
+  <insert id="insertUser" parameterType="User">
+    	INSERT INTO USERS
+    	(
+    		EMAIL,
+        	ENCRYPTED_PASSWORD,
+			CREATED_AT,
+			UPDATED_AT
+		)
+		VALUES
+		(
+    		#{email},
+        	#{encrypted_password},
+			sysdate,
+			sysdate
+		)
+  </insert>
+  
+<!-- 로그인 -->
+  <select id="selectUser"  parameterType="User"  resultType="User">
+  		SELECT
+  			EMAIL,
+        	ENCRYPTED_PASSWORD,
+			NAME,
+			CREATED_AT,
+			UPDATED_AT
+		FROM
+			USERS
+		WHERE
+			EMAIL=#{email} 
+			AND
+			ENCRYPTED_PASSWORD=#{encrypted_password}
+  </select>
+<!-- 상품등록 -->
+  <insert id="insertProduct" parameterType="Product">
+  
+  		INSERT INTO PRODUCTS
+  		(
+  			PRODUCTSEQ,
+			EMAIL,
+			TITLE,
+			CATEGORY,
+			PRICE,
+			DESCRIPTION,
+			IMAGE,
+			CREATED_AT,
+			UPDATED_AT
+  		)
+  		VALUES
+  		(
+  			PRODUCTSEQ.NEXTVAL,
+  			#{email},
+        	#{title},
+			#{category},
+			#{price},
+			#{description},
+			#{image},
+			sysdate,
+			sysdate
+  		)
+  </insert>
+  
+ <!-- 차종추가등록 -->
+ <insert id="insertCar" parameterType="Product">
+ <selectKey keyProperty="productseq" resultType="string" order="BEFORE">
+   SELECT MAX(PRODUCTSEQ) FROM PRODUCTS  
+  </selectKey>
+ 			INSERT INTO CARS
+ 			(
+ 				CARSEQ,
+				PRODUCTSEQ,
+				MADEDATE,
+				RANDISTANCE,
+				ISSMOKE
+			)
+ 		VALUES
+ 			(
+  				CARSEQ.NEXTVAL,
+        		#{productseq},
+				#{madedate},
+				#{randistance},
+				#{issmoke}
+  			)
+ </insert>
+  <!--상품 전체 조회 -->
+ <select id="selectProducts" resultType="Product">
+ 	SELECT
+ 			PRODUCTSEQ,
+			EMAIL,
+			TITLE,
+			CATEGORY,
+			PRICE,
+			DESCRIPTION,
+			IMAGE,
+			CREATED_AT,
+			UPDATED_AT
+	FROM
+		PRODUCTS
+
+ </select> 
+ <!-- 상품일련번호로 상품 조회 -->
+ <select id="selectProductBySeq" parameterType="String" resultType="Product">
+ 	SELECT
+ 			PRODUCTSEQ,
+			EMAIL,
+			TITLE,
+			CATEGORY,
+			PRICE,
+			DESCRIPTION,
+			IMAGE,
+			CREATED_AT,
+			UPDATED_AT
+	FROM
+		PRODUCTS
+	WHERE
+		PRODUCTSEQ=#{productSeq}
+
+ </select>
+  
+
+ 
+   <!-- 상품일련번호로 차량상품 조회 -->
+ <select id="selectCarBySeq" parameterType="String" resultType="Product">
+ 	SELECT
+ 			A.PRODUCTSEQ PRODUCTSEQ,
+			A.EMAIL EMAIL,
+			A.TITLE TITLE,
+			A.CATEGORY CATEGORY,
+			A.PRICE PRICE,
+			A.DESCRIPTION DESCRIPTION,
+			A.IMAGE IMAGE,
+			A.CREATED_AT CREATED_AT,
+			A.UPDATED_AT UPDATED_AT,
+			B.CARSEQ CARSEQ,
+			B.PRODUCTSEQ PRODUCTSEQ,
+			B.MADEDATE MADEDATE,
+			B.RANDISTANCE RANDISTANCE,
+			B.ISSMOKE ISSMOKE
+	FROM
+		PRODUCTS A,CARS B
+	WHERE
+		A.PRODUCTSEQ=B.PRODUCTSEQ
+		AND 
+		A.PRODUCTSEQ=#{productSeq}
+
+ </select>
+
+<!-- 필터조건으로 차량상품 조회 -->
+ <select id="selectCarByFilter" parameterType="Map" resultType="Product">
+ 	SELECT
+ 			A.PRODUCTSEQ PRODUCTSEQ,
+			A.EMAIL EMAIL,
+			A.TITLE TITLE,
+			A.CATEGORY CATEGORY,
+			A.PRICE PRICE,
+			A.DESCRIPTION DESCRIPTION,
+			A.IMAGE IMAGE,
+			A.CREATED_AT CREATED_AT,
+			A.UPDATED_AT UPDATED_AT,
+			B.CARSEQ CARSEQ,
+			B.PRODUCTSEQ PRODUCTSEQ,
+			B.MADEDATE MADEDATE,
+			B.RANDISTANCE RANDISTANCE,
+			B.ISSMOKE ISSMOKE
+	FROM
+		PRODUCTS A,CARS B
+	WHERE
+		A.PRODUCTSEQ=B.PRODUCTSEQ
+		AND 
+		B.MADEDATE BETWEEN #{YearFrom} AND #{YearTo}
+		AND
+		B.RANDISTANCE BETWEEN #{MileageFrom} AND #{MileageTo}
+		AND
+		B.ISSMOKE = #{issmoke}
+
+ </select>
+ 
+ <!-- 상품 카테고리로 상품 조회 -->
+ <select id="selectProductByCategory" parameterType="String" resultType="Product">
+ 	SELECT
+ 			PRODUCTSEQ,
+			EMAIL,
+			TITLE,
+			CATEGORY,
+			PRICE,
+			DESCRIPTION,
+			IMAGE,
+			CREATED_AT,
+			UPDATED_AT
+	FROM
+		PRODUCTS
+	WHERE
+		CATEGORY=#{category}
+ </select>
+ 
+</mapper>
