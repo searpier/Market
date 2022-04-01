@@ -1,4 +1,4 @@
-# 당근마켓
+# 당근마켓(프론트 따라해봄)
 
 사용 기술 : 
 Spring, Mybatis, jsp(jstl,EL), OracleDB, AJAX, JQuery
